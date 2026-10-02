@@ -1,0 +1,115 @@
+{
+  "entities": {
+    "ExpenseClaimEntity": {
+      "title": "ExpenseClaim",
+      "description": "An employee expense reimbursement, travel advance, mileage log, or allowance record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "claimNumber": { "type": "string", "maxLength": 64 },
+        "type": { "type": "string", "enum": ["reimbursement", "travel_advance", "mileage", "allowance"] },
+        "employeeId": { "type": "string", "maxLength": 128 },
+        "employeeName": { "type": "string", "maxLength": 128 },
+        "employeeGrade": { "type": "string", "maxLength": 64 },
+        "legalEntity": { "type": "string", "maxLength": 64 },
+        "location": { "type": "string", "maxLength": 128 },
+        "tripId": { "type": "string", "maxLength": 128 },
+        "tripNumber": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "maxLength": 32 },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "category": { "type": "string", "maxLength": 64 },
+        "businessPurpose": { "type": "string", "maxLength": 1000 },
+        "merchantName": { "type": "string", "maxLength": 256 },
+        "approvalStatus": { "type": "string", "enum": ["auto_authorized", "pending_manager", "approved_by_manager", "rejected", "requires_clarification"] },
+        "payableStatus": { "type": "string", "enum": ["unauthorized", "payable_pending_report", "included_in_payout_report", "settled_externally"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "submissionChannel": { "type": "string", "maxLength": 32 }
+      },
+      "required": ["claimNumber", "type", "employeeId", "amount", "approvalStatus"]
+    },
+    "TripEntity": {
+      "title": "Trip",
+      "description": "A registered corporate travel itinerary required for travel expense claiming.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tripNumber": { "type": "string", "maxLength": 64 },
+        "employeeId": { "type": "string", "maxLength": 128 },
+        "employeeName": { "type": "string", "maxLength": 128 },
+        "department": { "type": "string", "maxLength": 64 },
+        "purpose": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["draft", "pending_approval", "approved", "rejected", "amendment_pending", "completed", "cancelled"] },
+        "version": { "type": "number" },
+        "estimatedCost": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["tripNumber", "employeeId", "purpose", "status", "version"]
+    },
+    "PolicyEntity": {
+      "title": "ExpensePolicy",
+      "description": "Corporate expense policy defining grade limits by legal entity and location.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "legalEntity": { "type": "string", "maxLength": 64 },
+        "location": { "type": "string", "maxLength": 128 },
+        "version": { "type": "string", "maxLength": 32 },
+        "isDefault": { "type": "boolean" }
+      },
+      "required": ["name", "legalEntity", "version"]
+    },
+    "PayoutReportEntity": {
+      "title": "PayoutReport",
+      "description": "Versioned snapshot of authorized payable liabilities for Finance/payroll handoff.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "reportNumber": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "periodStart": { "type": "string", "maxLength": 32 },
+        "periodEnd": { "type": "string", "maxLength": 32 },
+        "totalPayableAmount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "status": { "type": "string", "enum": ["draft", "finalized_for_payroll", "exported_to_bank", "marked_settled"] }
+      },
+      "required": ["reportNumber", "totalPayableAmount", "status"]
+    },
+    "UserProfileEntity": {
+      "title": "UserProfile",
+      "description": "User profile with workforce metadata and authentication linkage.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "employeeId": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/claims/{claimId}": {
+      "schema": { "$ref": "#/entities/ExpenseClaimEntity" },
+      "description": "Collection of employee expense claims and reimbursements"
+    },
+    "/trips/{tripId}": {
+      "schema": { "$ref": "#/entities/TripEntity" },
+      "description": "Collection of registered business travel trips and itinerary versions"
+    },
+    "/policies/{policyId}": {
+      "schema": { "$ref": "#/entities/PolicyEntity" },
+      "description": "Corporate expense policies and grade limits"
+    },
+    "/payout_reports/{reportId}": {
+      "schema": { "$ref": "#/entities/PayoutReportEntity" },
+      "description": "Versioned finance payout reports and handoff summaries"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfileEntity" },
+      "description": "User accounts and employee links"
+    }
+  }
+}

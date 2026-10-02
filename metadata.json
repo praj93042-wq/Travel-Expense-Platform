@@ -1,0 +1,6 @@
+{
+  "name": "Patty Expense Platform",
+  "description": "Workforce-connected expense management platform with continuous multi-channel capture, grade-based policy evaluation, trip registration, and finance payout handoffs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
